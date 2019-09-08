@@ -1,20 +1,31 @@
 import numpy
 import cv2
+from os import path
+
+class CustomError(Exception):
+    pass
 
 class VideoHandler:
 
     def __init__(self):
         self.video = cv2.VideoCapture()
+        self.supported_formats=['mp4','avi']
+
 
     def SetCapture(self,video_input):
         '''
         :param video_input: path to video file OR camera id for live capturing
         :return: 0 if capture OR details as [frameCount,frameWidth,frameHeight,filename] if file
         '''
-        self.video = cv2.VideoCapture(video_input)
+
         if type(video_input) == str:
-            info = self.getVideoDetails()
-            info.append(video_input.split('/')[-1])
+            if path.exists(video_input) and video_input.split('/')[-1].split('.')[-1] in self.supported_formats:
+                self.video = cv2.VideoCapture(video_input)
+                info = self.getVideoDetails()
+                info.append(video_input.split('/')[-1])
+            else:
+                print ('\nInvalid Input: Path '+video_input+' does not exist or file format is not supported. Please use one the following formats: ',self.supported_formats)
+                raise ValueError
         else:
             info = 0
         return info

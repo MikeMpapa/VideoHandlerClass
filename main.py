@@ -28,7 +28,7 @@ if __name__ == "__main__":
     file_details = []
     for path in sample_paths:
         vid = VideoHandler()
-        file_details.append(vid.SetCapture(path))
+        file_details.append(vid.SetCapture('sdsa'))
         frames = vid.getVideoFrames('all')
         data_gray.append(frames[-1])
         data_rgb.append(frames[0])
