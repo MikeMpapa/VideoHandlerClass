@@ -25,12 +25,17 @@ if __name__ == "__main__":
 
     data_gray = []
     data_rgb = []
+    file_details = []
     for path in sample_paths:
         vid = VideoHandler()
-        vid.SetCapture(path)
+        file_details.append(vid.SetCapture(path))
         frames = vid.getVideoFrames('all')
         data_gray.append(frames[-1])
         data_rgb.append(frames[0])
+
+    for details in file_details:
+         print (details)
+         # print(video.getVideoDetails())
 
 
     pass

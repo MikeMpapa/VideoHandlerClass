@@ -9,10 +9,15 @@ class VideoHandler:
     def SetCapture(self,video_input):
         '''
         :param video_input: path to video file OR camera id for live capturing
-        :return:
+        :return: 0 if capture OR details as [frameCount,frameWidth,frameHeight,filename] if file
         '''
         self.video = cv2.VideoCapture(video_input)
-        return 0
+        if type(video_input) == str:
+            info = self.getVideoDetails()
+            info.append(video_input.split('/')[-1])
+        else:
+            info = 0
+        return info
 
 
     def getVideoFrames(self,flag='all'):
@@ -33,7 +38,7 @@ class VideoHandler:
                 frames[0].append(frame)
             if count==10:
                 break
-        self.video.release()
+            self.video.release()
         return frames
 
 
@@ -53,6 +58,16 @@ class VideoHandler:
         self.release()
         cv2.destroyAllWindows()
         return 0
+
+    def getVideoDetails(self):
+        '''
+        Return video statistics as a list [frameCount,frameWidth,frameHeight]
+        :return:
+        '''
+        frameCount = int(self.video.get(cv2.CAP_PROP_FRAME_COUNT))
+        frameWidth = int(self.video.get(cv2.CAP_PROP_FRAME_WIDTH))
+        frameHeight = int(self.video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        return [frameCount,frameWidth,frameHeight]
 
 
 
