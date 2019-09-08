@@ -38,7 +38,7 @@ if __name__ == "__main__":
          # print(video.getVideoDetails())
 
     VideoHandler.createVideo(data_rgb[0],'test_video_part','/home/michalis/Desktop/test_video/vids/',file_details[0][1],file_details[0][2])
-
+    VideoHandler.playbackFrames(data_rgb[0])
 
     pass
 

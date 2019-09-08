@@ -52,6 +52,7 @@ class VideoHandler:
         return frames
 
 
+
     def playbackVideo(self,):
         '''
         playback a VideoHandler Object
@@ -59,15 +60,13 @@ class VideoHandler:
         '''
         while (self.video.isOpened()):
             ret, frame = self.video.read()
-
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-            cv2.imshow('frame', gray)
+            cv2.imshow('frame', frame)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
         self.release()
         cv2.destroyAllWindows()
         return 0
+
 
     def getVideoDetails(self):
         '''
@@ -110,6 +109,16 @@ def createVideo(data,filename,save_path,width,height,format='mp4',fps=30):
             video.write(image)
         return 0
 
+
+def playbackFrames(data):
+        '''
+        Playback a list of frames
+        :return:
+        '''
+        for image in data:
+            cv2.imshow('frame', image)
+            cv2.waitKey(0.5)
+        return 0
 
 
 
