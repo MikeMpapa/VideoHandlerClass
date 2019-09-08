@@ -1,15 +1,14 @@
 import numpy
 import cv2
-from os import path
+from os import path,makedirs
 
-class CustomError(Exception):
-    pass
+global supported_formats
+supported_formats = ['mp4','avi']
 
 class VideoHandler:
 
     def __init__(self):
         self.video = cv2.VideoCapture()
-        self.supported_formats=['mp4','avi']
 
 
     def SetCapture(self,video_input):
@@ -19,12 +18,12 @@ class VideoHandler:
         '''
 
         if type(video_input) == str:
-            if path.exists(video_input) and video_input.split('/')[-1].split('.')[-1] in self.supported_formats:
+            if path.exists(video_input) and video_input.split('/')[-1].split('.')[-1] in supported_formats:
                 self.video = cv2.VideoCapture(video_input)
                 info = self.getVideoDetails()
                 info.append(video_input.split('/')[-1])
             else:
-                print ('\nInvalid Input: Path '+video_input+' does not exist or file format is not supported. Please use one the following formats: ',self.supported_formats)
+                print ('\nInvalid Input: Path '+video_input+' does not exist or file format is not supported. Please use one the following formats: ',supported_formats)
                 raise ValueError
         else:
             info = 0
@@ -47,9 +46,9 @@ class VideoHandler:
                 frames[-1].append(gray)
             if flag == 'all' or flag == 'rgb':
                 frames[0].append(frame)
-            if count==10:
+            if count==100:
                 break
-            self.video.release()
+        self.video.release()
         return frames
 
 
@@ -81,7 +80,35 @@ class VideoHandler:
         return [frameCount,frameWidth,frameHeight]
 
 
+def createVideo(data,filename,save_path,width,height,format='mp4',fps=30):
+        '''
+        Creates and stores a video from a list of images
 
+        :param data: list of images
+        :param filename: output file name
+        :param save_path: dir to save the file
+        :param width: frame width
+        :param height: frame height
+        :param format: avi Or mp4 (Default--> mp4)
+        :param fps: frames per second (Default--> 25)
+        :return:
+        '''
+        codecs=['mp4v','XVID']
+        full_path=save_path+filename+'.'+format
+        if not path.exists(save_path):
+            makedirs(save_path)
+
+        try:
+            is_codec = codecs[supported_formats.index(format)]
+            print (is_codec)
+            codec = cv2.VideoWriter_fourcc(*is_codec)
+        except:
+            print('Invalis Video Format. Choose one from:',supported_formats)
+
+        video = cv2.VideoWriter(full_path, codec, fps, (width, height))
+        for image in data:
+            video.write(image)
+        return 0
 
 
 

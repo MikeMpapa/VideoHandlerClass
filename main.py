@@ -1,4 +1,4 @@
-from VideoHandler import VideoHandler
+import VideoHandler
 from glob import glob
 
 '''
@@ -27,8 +27,8 @@ if __name__ == "__main__":
     data_rgb = []
     file_details = []
     for path in sample_paths:
-        vid = VideoHandler()
-        file_details.append(vid.SetCapture('sdsa'))
+        vid = VideoHandler.VideoHandler()
+        file_details.append(vid.SetCapture(path))
         frames = vid.getVideoFrames('all')
         data_gray.append(frames[-1])
         data_rgb.append(frames[0])
@@ -36,6 +36,8 @@ if __name__ == "__main__":
     for details in file_details:
          print (details)
          # print(video.getVideoDetails())
+
+    VideoHandler.createVideo(data_rgb[0],'test_video_part','/home/michalis/Desktop/test_video/vids/',file_details[0][1],file_details[0][2])
 
 
     pass
