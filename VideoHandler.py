@@ -4,9 +4,13 @@ import cv2
 class VideoHandler:
 
     def __init__(self):
-        self.video = ''
+        self.video = cv2.VideoCapture()
 
     def SetCapture(self,video_input):
+        '''
+        :param video_input: path to video file OR camera id for live capturing
+        :return:
+        '''
         self.video = cv2.VideoCapture(video_input)
         return 0
 
