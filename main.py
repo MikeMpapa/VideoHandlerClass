@@ -25,20 +25,23 @@ if __name__ == "__main__":
 
     data_gray = []
     data_rgb = []
-    file_details = []
+    videos = []
     for path in sample_paths:
         vid = VideoHandler.VideoHandler()
-        file_details.append(vid.SetCapture(path))
-        frames = vid.getVideoFrames('all')
-        data_gray.append(frames[-1])
-        data_rgb.append(frames[0])
+        vid.setCapture(path)
+        vid.getVideoFrames('all')
+        data_gray.append(vid.frames[-1])
+        data_rgb.append(vid.frames[0])
+        videos.append(vid)
 
-    for details in file_details:
-         print (details)
+
+    for video in videos:
+         print (video.filename,'llllll')
          # print(video.getVideoDetails())
 
-    VideoHandler.createVideo(data_rgb[0],'test_video_part','/home/michalis/Desktop/test_video/vids/',file_details[0][1],file_details[0][2])
-    VideoHandler.playbackFrames(data_rgb[0])
+    VideoHandler.createVideo(data_rgb[0],'test_video_part','/home/michalis/Desktop/test_video/vids/',videos[0].frameWidth,videos[0].frameHeight)
+    videos[0].saveFramesInDir('/home/michalis/Desktop/test_video/frames/')
+    #VideoHandler.playbackFrames(data_rgb[0])
 
     pass
 

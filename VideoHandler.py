@@ -9,53 +9,64 @@ class VideoHandler:
 
     def __init__(self):
         self.video = cv2.VideoCapture()
+        self.video_input = None
+        self.frameCount = None
+        self.frameWidth = None
+        self.frameHeight = None
+        self.filename = None
+        self.frames = []
 
 
-    def SetCapture(self,video_input):
+    def setCapture(self,video_input):
         '''
+        Set video input, load video and retrieve video details
         :param video_input: path to video file OR camera id for live capturing
-        :return: 0 if capture OR details as [frameCount,frameWidth,frameHeight,filename] if file
+        :return:
         '''
-
         if type(video_input) == str:
             if path.exists(video_input) and video_input.split('/')[-1].split('.')[-1] in supported_formats:
                 self.video = cv2.VideoCapture(video_input)
-                info = self.getVideoDetails()
-                info.append(video_input.split('/')[-1])
+                self.getVideoDetails()
+                self.filename = video_input.split('/')[-1]
             else:
                 print ('\nInvalid Input: Path '+video_input+' does not exist or file format is not supported. Please use one the following formats: ',supported_formats)
                 raise ValueError
         else:
             info = 0
-        return info
+        self.video_input = video_input
+        return
 
 
-    def getVideoFrames(self,flag='all'):
+    def getVideoFrames(self,toExtract='all'):
         '''
-        :param flag: Which set of frames to return - 0:All (Default), 1:RGB, 2:Grayscale
-        :return: list of lists cointaing the sequence of RGB frames --> frames[0] and Gray frames-->frames[1]==frames[-1]
+        Extract frames from video and store as: self.frames[rgb_frmes,gray_frame]
+        :param toExtract: Which set of frames to return - 0:All (Default), 1:RGB, 2:Grayscale
+        :return:
         '''
+
+        toExtract = toExtract.lower()
         frames = []
-        if  flag=='all':frames = [[],[]]
+        if  toExtract=='all':frames = [[],[]]
         count = 0
         while (self.video.isOpened()):
             ret, frame = self.video.read()
             count+=1
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            if flag=='all' or flag=='gray':
+            if toExtract=='all' or toExtract=='gray':
                 frames[-1].append(gray)
-            if flag == 'all' or flag == 'rgb':
+            if toExtract == 'all' or toExtract == 'rgb':
                 frames[0].append(frame)
-            if count==100:
+            if count==30:
                 break
         self.video.release()
-        return frames
+        self.frames = frames
+        return
 
 
 
     def playbackVideo(self,):
         '''
-        playback a VideoHandler Object
+        Playback a VideoHandler Object
         :return:
         '''
         while (self.video.isOpened()):
@@ -65,18 +76,43 @@ class VideoHandler:
                 break
         self.release()
         cv2.destroyAllWindows()
-        return 0
+        return
 
 
     def getVideoDetails(self):
         '''
-        Return video statistics as a list [frameCount,frameWidth,frameHeight]
+        Retrieve Video Statistics
         :return:
         '''
-        frameCount = int(self.video.get(cv2.CAP_PROP_FRAME_COUNT))
-        frameWidth = int(self.video.get(cv2.CAP_PROP_FRAME_WIDTH))
-        frameHeight = int(self.video.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        return [frameCount,frameWidth,frameHeight]
+        self.frameCount = int(self.video.get(cv2.CAP_PROP_FRAME_COUNT))
+        self.frameWidth = int(self.video.get(cv2.CAP_PROP_FRAME_WIDTH))
+        self.frameHeight = int(self.video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        return
+
+
+    def saveFramesInDir(self,save_path,toExtract='all'):
+        '''
+        Saves video frames into a given dit
+        :param save_path: path to save frames
+        :param toExtract: Which set of frames to return - 0:All (Default), 1:RGB, 2:Grayscale
+        :return:
+        '''
+
+        toExtract = toExtract.lower()
+        if not path.exists(save_path):
+            makedirs(save_path)
+        if not self.frames:
+            self.getVideoFrames(toExtract)
+
+        if toExtract=='all' or toExtract=='gray':
+            for idx,im in enumerate(self.frames[0]):
+                cv2.imwrite(save_path+'/gray/'+str(idx)+'.png',im)
+        if toExtract=='all' or toExtract=='rgb':
+            for idx,im in enumerate(self.frames[-1]):
+                cv2.imwrite(save_path+'/rgb/'+str(idx)+'.png',im)
+        return
+
+
 
 
 def createVideo(data,filename,save_path,width,height,format='mp4',fps=30):
@@ -107,7 +143,7 @@ def createVideo(data,filename,save_path,width,height,format='mp4',fps=30):
         video = cv2.VideoWriter(full_path, codec, fps, (width, height))
         for image in data:
             video.write(image)
-        return 0
+        return
 
 
 def playbackFrames(data):
@@ -118,7 +154,7 @@ def playbackFrames(data):
         for image in data:
             cv2.imshow('frame', image)
             cv2.waitKey(0.5)
-        return 0
+        return
 
 
 
