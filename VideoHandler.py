@@ -99,15 +99,18 @@ class VideoHandler:
         '''
 
         toExtract = toExtract.lower()
-        if not path.exists(save_path):
-            makedirs(save_path)
+
         if not self.frames:
             self.getVideoFrames(toExtract)
 
         if toExtract=='all' or toExtract=='gray':
+            if not path.exists(save_path+'/gray/'):
+                makedirs(save_path+'/gray/')
             for idx,im in enumerate(self.frames[0]):
                 cv2.imwrite(save_path+'/gray/'+str(idx)+'.png',im)
         if toExtract=='all' or toExtract=='rgb':
+            if not path.exists(save_path + '/rgb/'):
+                makedirs(save_path+'/rgb/')
             for idx,im in enumerate(self.frames[-1]):
                 cv2.imwrite(save_path+'/rgb/'+str(idx)+'.png',im)
         return
