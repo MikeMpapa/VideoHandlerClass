@@ -1,7 +1,6 @@
-import numpy
 import cv2
 from os import path,makedirs
-
+from tqdm import tqdm
 global supported_formats
 supported_formats = ['mp4','avi']
 
@@ -45,21 +44,23 @@ class VideoHandler:
         '''
 
         toExtract = toExtract.lower()
-        frames = []
-        if  toExtract=='all':frames = [[],[]]
-        count = 0
+        frames = [[],[]]
+
         while (self.video.isOpened()):
             ret, frame = self.video.read()
-            count+=1
+            if frame is None:
+                break
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             if toExtract=='all' or toExtract=='gray':
                 frames[-1].append(gray)
             if toExtract == 'all' or toExtract == 'rgb':
                 frames[0].append(frame)
-            if count==30:
-                break
+        if not frames[0]: frames == frames[-1]
+        if not frames[-1]: frames == frames[0]
         self.video.release()
         self.frames = frames
+        print("Video information have been updated to its accurate value")
+        self.getVideoDetails()
         return
 
 
@@ -84,7 +85,10 @@ class VideoHandler:
         Retrieve Video Statistics
         :return:
         '''
-        self.frameCount = int(self.video.get(cv2.CAP_PROP_FRAME_COUNT))
+        if not self.frames:
+            self.frameCount = int(self.video.get(cv2.CAP_PROP_FRAME_COUNT))
+        else:
+            self.frameCount = max(len(self.frames[0]),len(self.frames[-1]))
         self.frameWidth = int(self.video.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.frameHeight = int(self.video.get(cv2.CAP_PROP_FRAME_HEIGHT))
         return
@@ -99,19 +103,18 @@ class VideoHandler:
         '''
 
         toExtract = toExtract.lower()
-
         if not self.frames:
             self.getVideoFrames(toExtract)
-
+        print ('Extract Frames for',self.filename,'Total number of frames:',self.frameCount)
         if toExtract=='all' or toExtract=='gray':
             if not path.exists(save_path+'/gray/'):
                 makedirs(save_path+'/gray/')
-            for idx,im in enumerate(self.frames[0]):
+            for idx,im in tqdm(enumerate(self.frames[-1])):
                 cv2.imwrite(save_path+'/gray/'+str(idx)+'.png',im)
         if toExtract=='all' or toExtract=='rgb':
             if not path.exists(save_path + '/rgb/'):
                 makedirs(save_path+'/rgb/')
-            for idx,im in enumerate(self.frames[-1]):
+            for idx,im in tqdm(enumerate(self.frames[0])):
                 cv2.imwrite(save_path+'/rgb/'+str(idx)+'.png',im)
         return
 
