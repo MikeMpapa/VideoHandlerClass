@@ -45,9 +45,12 @@ class VideoHandler:
 
         toExtract = toExtract.lower()
         frames = [[],[]]
-
+        count=0
         while (self.video.isOpened()):
+            count+=1
             ret, frame = self.video.read()
+            if count==50:
+                break
             if frame is None:
                 break
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -107,15 +110,15 @@ class VideoHandler:
             self.getVideoFrames(toExtract)
         print ('Extract Frames for',self.filename,'Total number of frames:',self.frameCount)
         if toExtract=='all' or toExtract=='gray':
-            if not path.exists(save_path+'/gray/'):
-                makedirs(save_path+'/gray/')
+            if not path.exists(save_path+'/gray/'+self.filename):
+                makedirs(save_path+'/gray/'+self.filename)
             for idx,im in tqdm(enumerate(self.frames[-1])):
-                cv2.imwrite(save_path+'/gray/'+str(idx)+'.png',im)
+                cv2.imwrite(save_path+'/gray/'+self.filename+'/'+str(idx)+'.png',im)
         if toExtract=='all' or toExtract=='rgb':
-            if not path.exists(save_path + '/rgb/'):
-                makedirs(save_path+'/rgb/')
+            if not path.exists(save_path + '/rgb/'+self.filename):
+                makedirs(save_path+'/rgb/'+self.filename)
             for idx,im in tqdm(enumerate(self.frames[0])):
-                cv2.imwrite(save_path+'/rgb/'+str(idx)+'.png',im)
+                cv2.imwrite(save_path+'/rgb/'+self.filename+'/'+str(idx)+'.png',im)
         return
 
 

@@ -29,24 +29,27 @@ if __name__ == "__main__":
     args = ParseInputArguments()
     print (args.datapath)
     sample_paths = loadVideosFromDir(args.datapath+'/*avi')
-    data_gray = []
-    data_rgb = []
+    #data_gray = []
+    #data_rgb = []
     videos = []
     for path in sample_paths:
         vid = VideoHandler.VideoHandler()
         vid.setCapture(path)
         vid.getVideoFrames('all')
-        data_gray.append(vid.frames[-1])
-        data_rgb.append(vid.frames[0])
-        videos.append(vid)
+        vid.saveFramesInDir('/home/mpapakos/Desktop/vidsASframes/')
+
+        #data_gray.append(vid.frames[-1])
+        #data_rgb.append(vid.frames[0])
+     #   videos.append(vid)
 
 
-    for video in videos:
-         print (video.filename,'llllll')
-         # print(video.getVideoDetails())
+    #for video in videos:
+        #video.saveFramesInDir('/home/mpapakos/Desktop/vidsASframes/')
+        #print (video.filename,'llllll')
+        # print(video.getVideoDetails())
 
     #VideoHandler.createVideo(data_rgb[0],'test_video_part','/home/mpapakos/Desktop/',videos[0].frameWidth,videos[0].frameHeight)
-    videos[0].saveFramesInDir('/home/mpapakos/Desktop/test_video/frames/')
+    #videos[0].saveFramesInDir('/home/mpapakos/Desktop/test_video/frames/')
     #VideoHandler.playbackFrames(data_rgb[0])
 
     pass
