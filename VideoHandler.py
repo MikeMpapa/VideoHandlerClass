@@ -45,12 +45,12 @@ class VideoHandler:
 
         toExtract = toExtract.lower()
         frames = [[],[]]
-        count=0
+        #count=0
         while (self.video.isOpened()):
-            count+=1
+            #count+=1
             ret, frame = self.video.read()
-            if count==50:
-                break
+            #if count==50:
+                #break
             if frame is None:
                 break
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -110,15 +110,22 @@ class VideoHandler:
             self.getVideoFrames(toExtract)
         print ('Extract Frames for',self.filename,'Total number of frames:',self.frameCount)
         if toExtract=='all' or toExtract=='gray':
-            if not path.exists(save_path+'/gray/'+self.filename):
-                makedirs(save_path+'/gray/'+self.filename)
-            for idx,im in tqdm(enumerate(self.frames[-1])):
-                cv2.imwrite(save_path+'/gray/'+self.filename+'/'+str(idx)+'.png',im)
+            filename = self.filename.replace('.avi','')
+            if not path.exists(save_path+'/gray/'+filename):
+                makedirs(save_path+'/gray/'+filename)
+                for idx,im in tqdm(enumerate(self.frames[-1])):
+                    cv2.imwrite(save_path+'/gray/'+filename+'/'+str(idx)+'.png',im)
+            else:
+                print ("Folder "+save_path+'/gray/'+filename," already exists - Skipping...") # do nothing if directory is already there
+
         if toExtract=='all' or toExtract=='rgb':
-            if not path.exists(save_path + '/rgb/'+self.filename):
-                makedirs(save_path+'/rgb/'+self.filename)
-            for idx,im in tqdm(enumerate(self.frames[0])):
-                cv2.imwrite(save_path+'/rgb/'+self.filename+'/'+str(idx)+'.png',im)
+            filename = self.filename.replace('.avi','')
+            if not path.exists(save_path + '/rgb/'+filename):
+                makedirs(save_path+'/rgb/'+filename)
+                for idx,im in tqdm(enumerate(self.frames[0])):
+                    cv2.imwrite(save_path+'/rgb/'+filename+'/'+str(idx)+'.png',im)
+            else:
+                print ("Folder "+save_path+'/rgb/'+filename+" already exists - Skipping...") # do nothing if directory is already there
         return
 
 
